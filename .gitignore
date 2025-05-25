@@ -1,0 +1,42 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# TypeScript
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+*.out
+*.log.*
+
+# Environment variables
+.env
+.env.*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# MySQL dump files
+*.sql
+
+# Optional: ignore coverage if using a coverage tool (e.g., nyc, istanbul)
+coverage/
+.nyc_output/
+
+# Others
+*.tgz
