@@ -1,19 +1,17 @@
 // Importar a biblioteca Express
 import express, { Request, Response } from 'express';
 
-// Importar o arquivo com as credenciais do banco de dados
-import { AppDataSource } from './data-source';
-
 // Criar uma instância do Express
 const app = express();
 
-// Inicializar a conexão com o banco de dados
-AppDataSource.initialize()
-    .then(() => {
-        console.log('Database connected');
-    }).catch((error) => {
-        console.log(error);
-    })
+// Criar o middleware para receber os dados no corpo da requisição
+app.use(express.json());
+
+// Incluir as controllers
+import UsersController from './controllers/UsersController';
+
+// Criar as rotas de usuários
+app.use("", UsersController);    
 
 // Definir uma rota simples
 app.get('/', (req: Request, res: Response) => {
