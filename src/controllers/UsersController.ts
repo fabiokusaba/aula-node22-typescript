@@ -41,13 +41,39 @@ router.post("/users", async (req: Request, res: Response) => {
             message: "Usuário cadastrado com sucesso!",
             user: newUser
         });
+        return;
     } catch(error) {
         // Retornar erro em caso de falha
         res.status(500).json({
             message: "Erro ao cadastrar usuário!",
         });
+        return;
     }
 })
+
+// Criar a rota para listar os usuários
+router.get("/users", async (req: Request, res: Response) => {
+    try {
+        // Criar uma instância do repositório de User
+        const userRepository = AppDataSource.getRepository(User);
+
+        // Recuperar todos os usuários do banco de dados
+        const users = await userRepository.find();
+
+        // Retornar os usuários como resposta
+        res.status(200).json({
+            message: "Usuários listados com sucesso!",
+            users: users
+        });
+        return;
+    } catch(error) {
+        // Retornar erro em caso de falha
+        res.status(500).json({
+            message: "Erro ao listar usuários!",
+        });
+        return;
+    }
+});
 
 // Exportar o router que define todas as rotas da aplicação
 export default router;
