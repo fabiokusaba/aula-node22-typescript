@@ -7,6 +7,9 @@ import { AppDataSource } from '../data-source';
 // Importar a entidade User
 import { User } from '../entity/User';
 
+// Importar o Not para utilizar como restrição para ignorar o próprio ID na consulta
+import { Not } from 'typeorm';
+
 // Criar uma instância do Express para definir as rotas
 const router = express.Router();
 
@@ -105,6 +108,67 @@ router.get("/users/:id", async (req: Request, res: Response) => {
         // Retornar erro em caso de falha
         res.status(500).json({
             message: "Erro ao visualizar usuário!",
+        });
+        return;
+    }
+});
+
+// Criar a rota para editar um usuário
+router.put("/users/:id", async (req: Request, res: Response) => {
+    try {
+        // Obter o ID do usuário a partir dos parâmetros da requisição
+        const id = parseInt(req.params.id);
+
+        // Receber os dados enviados no corpo da requisição
+        const data = req.body;
+
+        // Obter o repositório da entidade User
+        const userRepository = AppDataSource.getRepository(User);
+
+        // Buscar o usuário no banco de dados pelo ID
+        const user = await userRepository.findOneBy({ id: id });
+
+        // Verificar se o usuário foi encontrado
+        if (!user) {
+            res.status(404).json({
+                message: "Usuário não encontrado!"
+            });
+            return;
+        }
+
+        // Verificar se já existe outro usuário com o mesmo email, mas que não seja o registro atual
+        const existingUser = await userRepository.findOne({ 
+            where: { 
+                email: data.email, 
+                id: Not(id) // Exclui o próprio registro da busca
+            } 
+        });
+
+        // Verifica se o usuário foi encontrado
+        if (existingUser) {
+            res.status(400).json({
+                message: "Já existe um usuário cadastrado com esse email!"
+            });
+            return;
+        }
+
+        // Atualizar os dados do usuário
+        userRepository.merge(user, data);
+
+        // Salvar as alterações no banco de dados
+        const updatedUser = await userRepository.save(user);
+
+        // Retornar a resposta de sucesso
+        res.status(200).json({
+            message: "Usuário atualizado com sucesso!",
+            user: updatedUser
+        });
+        return;
+
+    } catch(error) {
+        // Retornar erro em caso de falha
+        res.status(500).json({
+            message: "Erro ao editar usuário!",
         });
         return;
     }
