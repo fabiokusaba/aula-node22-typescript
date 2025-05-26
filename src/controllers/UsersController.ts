@@ -49,7 +49,7 @@ router.post("/users", async (req: Request, res: Response) => {
         });
         return;
     }
-})
+});
 
 // Criar a rota para listar os usuários
 router.get("/users", async (req: Request, res: Response) => {
@@ -70,6 +70,41 @@ router.get("/users", async (req: Request, res: Response) => {
         // Retornar erro em caso de falha
         res.status(500).json({
             message: "Erro ao listar usuários!",
+        });
+        return;
+    }
+});
+
+// Criar a rota para visualizar um usuário específico
+router.get("/users/:id", async (req: Request, res: Response) => {
+    try {
+        // Obter o ID do usuário a partir dos parâmetros da requisição
+        const id = parseInt(req.params.id);
+
+        // Obter o repositório da entidade User
+        const userRepository = AppDataSource.getRepository(User);
+
+        // Buscar o usuário no banco de dados pelo ID
+        const user = await userRepository.findOneBy({ id: id });
+
+        // Verificar se o usuário foi encontrado
+        if (!user) {
+            res.status(404).json({
+                message: "Usuário não encontrado!"
+            });
+            return;
+        }
+
+        // Retornar o usuário como resposta
+        res.status(200).json({
+            message: "Usuário visualizado com sucesso!",
+            user: user
+        });
+        return;
+    } catch(error) {
+        // Retornar erro em caso de falha
+        res.status(500).json({
+            message: "Erro ao visualizar usuário!",
         });
         return;
     }
