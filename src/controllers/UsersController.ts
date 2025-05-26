@@ -45,6 +45,7 @@ router.post("/users", async (req: Request, res: Response) => {
             user: newUser
         });
         return;
+        
     } catch(error) {
         // Retornar erro em caso de falha
         res.status(500).json({
@@ -69,6 +70,7 @@ router.get("/users", async (req: Request, res: Response) => {
             users: users
         });
         return;
+
     } catch(error) {
         // Retornar erro em caso de falha
         res.status(500).json({
@@ -104,6 +106,7 @@ router.get("/users/:id", async (req: Request, res: Response) => {
             user: user
         });
         return;
+
     } catch(error) {
         // Retornar erro em caso de falha
         res.status(500).json({
@@ -169,6 +172,44 @@ router.put("/users/:id", async (req: Request, res: Response) => {
         // Retornar erro em caso de falha
         res.status(500).json({
             message: "Erro ao editar usuário!",
+        });
+        return;
+    }
+});
+
+// Criar a rota para apagar um usuário
+router.delete("/users/:id", async (req: Request, res: Response) => {
+    try {
+        // Obter o ID do usuário a partir dos parâmetros da requisição
+        const id = parseInt(req.params.id);
+
+        // Obter o repositório da entidade User
+        const userRepository = AppDataSource.getRepository(User);
+
+        // Buscar o usuário no banco de dados pelo ID
+        const user = await userRepository.findOneBy({ id: id });
+
+        // Verificar se o usuário foi encontrado
+        if (!user) {
+            res.status(404).json({
+                message: "Usuário não encontrado!"
+            });
+            return;
+        }
+
+        // Remover o usuário do banco de dados
+        await userRepository.remove(user);
+
+        // Retornar a resposta de sucesso
+        res.status(200).json({
+            message: "Usuário apagado com sucesso!"
+        });
+        return;
+
+    } catch(error) {
+        // Retornar erro em caso de falha
+        res.status(500).json({
+            message: "Erro ao apagar usuário!",
         });
         return;
     }
